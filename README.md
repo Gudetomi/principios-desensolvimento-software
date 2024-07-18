@@ -37,11 +37,6 @@ Gere a key do projeto Laravel
 php artisan key:generate
 ```
 
-OPCIONAL: Gere o banco SQLite (caso não use o banco MySQL)
-```sh
-touch database/database.sqlite
-```
-
 Rodar as migrations
 ```sh
 php artisan migrate
