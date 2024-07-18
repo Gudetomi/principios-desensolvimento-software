@@ -12,7 +12,7 @@ cd principios-desenvolvimento-software
 
 Suba os containers do projeto
 ```sh
-docker-compose up -d
+docker-compose up -d --build
 ```
 
 
