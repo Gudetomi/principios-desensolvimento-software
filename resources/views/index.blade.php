@@ -17,7 +17,7 @@
   </div>
   <div class="px-10 pt-8 pb-16 -mt-16 lg:px-30 xl:px-40">
     <div class="grid gap-20 md:grid-cols-2 lg:grid-cols-2">
-      <div class="relative flex flex-col bg-clip-border rounded-xl bg-white text-gray-700 shadow-md h-full lg:scale-105 z-10 translate-y-0">
+      <div class="relative flex flex-col bg-clip-border rounde-xl bg-white text-gray-700 shadow-md h-full lg:scale-105 z-10 translate-y-0">
         <div class="p-6 text-center w-full">
           <h5 class="antialiased tracking-normal font-sans text-xl font-semibold leading-snug text-green-500 flex justify-center mt-2 mb-2">Entrada</h5>
           <ul class="flex flex-col items-left justify-start gap-3 pt-6 mt-2 mb-5">
