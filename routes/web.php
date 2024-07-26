@@ -7,6 +7,8 @@ Route::get('/', function () {
     return view('index');
 });
 
+Route::post('/chatbot/pergunta', [App\Http\Controllers\ChatBotController::class, 'pergunta'])->name('chatbot.pergunta');
+
 Route::get('/dashboard', function () {
     return view('dashboard');
 })->middleware(['auth', 'verified'])->name('dashboard');

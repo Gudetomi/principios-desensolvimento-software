@@ -4,6 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <meta name="csrf-token" content="{{ csrf_token() }}">
   <title>Princípios de Desenvolvimento de Software - Chatbot Saúde</title>
   @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
@@ -29,7 +30,7 @@
                 </div>
               </li>
             </div>
-          </ul><button class="align-middle select-none font-sans font-bold text-center uppercase transition-all disabled:opacity-50 disabled:shadow-none disabled:pointer-events-none text-xs py-3 px-6 rounded-lg bg-gray-900 text-white shadow-md shadow-gray-900/10 hover:shadow-lg hover:shadow-gray-900/20 focus:opacity-[0.85] focus:shadow-none active:opacity-[0.85] active:shadow-none w-full flex items-center justify-center gap-4" type="button">Enviar <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" aria-hidden="true" class="w-5 h-5">
+          </ul><button id="enviarPergunta" class="align-middle select-none font-sans font-bold text-center uppercase transition-all disabled:opacity-50 disabled:shadow-none disabled:pointer-events-none text-xs py-3 px-6 rounded-lg bg-gray-900 text-white shadow-md shadow-gray-900/10 hover:shadow-lg hover:shadow-gray-900/20 focus:opacity-[0.85] focus:shadow-none active:opacity-[0.85] active:shadow-none w-full flex items-center justify-center gap-4" type="button">Enviar <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" aria-hidden="true" class="w-5 h-5">
               <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3"></path>
             </svg></button>
         </div>
@@ -51,5 +52,28 @@
     </div>
   </div>
 </section>
+<script type="module">
+  // Certifique-se de que o jQuery está carregado antes de definir a função
+  $(document).ready(function() {
+      // Configurar o token CSRF para todas as requisições AJAX
+      $.ajaxSetup({
+          headers: {
+              'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+          }
+      });
+      $('#enviarPergunta').on('click', function() {
+          var url = "/chatbot/pergunta";
+          var pergunta = $("#inputPergunta").val();
+
+          $.post(url, { pergunta: pergunta })
+            .done(function (dados) {
+                $("#outputPergunta").val(dados);
+            })
+            .fail(function (jqXHR, textStatus, errorThrown) {
+                console.error('Error:', textStatus, errorThrown);
+            });
+        });
+  });
+</script>
 </body>
 </html>
