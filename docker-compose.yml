@@ -1,4 +1,4 @@
-version: "3"
+version: '3.8'
 
 services:
     # image project
@@ -26,35 +26,29 @@ services:
             - ./docker/nginx/:/etc/nginx/conf.d/
         networks:
             - laravel
-
-    # db mysql
     db:
-        image: mysql:8.0
+        image: postgres:16
         platform: linux/x86_64
         restart: unless-stopped
         environment:
-            MYSQL_DATABASE: ${DB_DATABASE:-laravel}
-            MYSQL_ROOT_PASSWORD: ${DB_PASSWORD:-root}
-            MYSQL_PASSWORD: ${DB_PASSWORD:-userpass}
-            MYSQL_USER: ${DB_USERNAME:-username}
+            POSTGRES_DB: ${DB_DATABASE:-laravel}
+            POSTGRES_USER: ${DB_USERNAME:-username}
+            POSTGRES_PASSWORD: ${DB_PASSWORD:-userpass}
         volumes:
-            - ./.docker/mysql/dbdata:/var/lib/mysql
+            - ./postgresql/data:/var/lib/postgresql/data
         ports:
-            - "3300:3306"
+            - "5432:5432"
         networks:
             - laravel
-
-    # PHPMyAdmin
-    phpmyadmin:
-        image: phpmyadmin/phpmyadmin
-        platform: linux/x86_64
-        restart: unless-stopped
+    pgadmin:
+        image: dpage/pgadmin4
         ports:
-            - "7070:80"
+            - "5050:80"
+        depends_on:
+            - db
         environment:
-            PMA_HOST: db
-            PMA_PORT: 3306
-            MYSQL_ROOT_PASSWORD: ${DB_PASSWORD:-root}
+            PGADMIN_DEFAULT_EMAIL: ${MAIL_FROM_ADDRESS}
+            PGADMIN_DEFAULT_PASSWORD: ${MAIL_PASSWORD}
         networks:
             - laravel
 
