@@ -8,8 +8,8 @@ class ChatBotController extends Controller
 {
     public function pergunta(Request $request){
         $dados = $request->only('pergunta');
-        $groq = new \App\Http\Controllers\GroqController();
-        $resposta = $groq->initGroq($dados['pergunta']);
+        $groq = new \App\Http\Controllers\RagController();
+        $resposta = $groq->initRag($dados['pergunta']);
         return json_encode($resposta);
     }
 }
