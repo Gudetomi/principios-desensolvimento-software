@@ -67,7 +67,8 @@
 
           $.post(url, { pergunta: pergunta })
             .done(function (dados) {
-                $("#outputPergunta").val(dados);
+              var resposta = JSON.parse(dados);
+                $("#outputPergunta").val(resposta);
             })
             .fail(function (jqXHR, textStatus, errorThrown) {
                 console.error('Error:', textStatus, errorThrown);

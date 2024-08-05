@@ -28,6 +28,9 @@ services:
             - laravel
     db:
         image: postgres:16
+        build:
+            context: .
+            dockerfile: Dockerfile.pgvector 
         platform: linux/x86_64
         restart: unless-stopped
         environment:
@@ -39,7 +42,7 @@ services:
         ports:
             - "5432:5432"
         networks:
-            - laravel
+            - laravel        
     pgadmin:
         image: dpage/pgadmin4
         ports:
@@ -51,8 +54,14 @@ services:
             PGADMIN_DEFAULT_PASSWORD: ${MAIL_PASSWORD}
         networks:
             - laravel
+    ollama:
+        image: ollama/ollama
+        container_name: ollama
+        ports:
+            - "11434:11434"
+        networks:
+            - laravel
 
-    # redis
     redis:
         image: redis:latest
         networks:
