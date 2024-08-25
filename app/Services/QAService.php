@@ -7,9 +7,7 @@ use LLPhant\Embeddings\DataReader\FileDataReader;
 use LLPhant\Embeddings\DocumentSplitter\DocumentSplitter;
 use LLPhant\OpenAIConfig;
 use LLPhant\Embeddings\EmbeddingGenerator\Mistral\MistralEmbeddingGenerator;
-use LLPhant\Embeddings\VectorStores\Memory\MemoryVectorStore;
 use LLPhant\Query\SemanticSearch\QuestionAnswering;
-use LLPhant\Embeddings\EmbeddingFormatter\EmbeddingFormatter;
 use LLPhant\Embeddings\VectorStores\Doctrine\DoctrineVectorStore;
 
 use Doctrine\DBAL\DriverManager;
@@ -44,9 +42,6 @@ class QAService
 
         $vectorStore = new DoctrineVectorStore($entityManager, PlaceEntity::class);
         $vectorStore->addDocuments($embeddedDocuments);
-
-        //$memoryVectorStore = new MemoryVectorStore();
-        //$memoryVectorStore->addDocuments($embeddedDocuments);
 
         $config = new OpenAIConfig();
         $config->model = 'open-mistral-7b';
