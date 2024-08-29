@@ -8,12 +8,11 @@ use LLPhant\Embeddings\DocumentSplitter\DocumentSplitter;
 use LLPhant\OpenAIConfig;
 use LLPhant\Embeddings\EmbeddingGenerator\Mistral\MistralEmbeddingGenerator;
 use LLPhant\Query\SemanticSearch\QuestionAnswering;
-use LLPhant\Embeddings\VectorStores\Doctrine\DoctrineVectorStore;
-
-use Doctrine\DBAL\DriverManager;
-use Doctrine\ORM\EntityManager;
-use Doctrine\ORM\ORMSetup;
-use App\Entities\PlaceEntity;
+use LLPhant\Embeddings\VectorStores\AstraDB\AstraDBVectorStore;
+use LLPhant\Embeddings\VectorStores\AstraDB\AstraDBClient;
+use LLPhant\Embeddings\Document;
+use LLPhant\Embeddings\EmbeddingFormatter\EmbeddingFormatter;
+use LLPhant\Embeddings\EmbeddingGenerator\EmbeddingGeneratorInterface;
 
 class QAService
 {
@@ -21,33 +20,18 @@ class QAService
 
     public function __construct()
     {
-        $config = ORMSetup::createAttributeMetadataConfiguration(
-            [__DIR__.'/Entities'],
-            true
-        );
-
-        $connectionParams = $this->getConnectionParams();
-
-        $connection = DriverManager::getConnection($connectionParams);
-
-        $entityManager = new EntityManager($connection, $config);
-
         $dataReader = new FileDataReader(__DIR__.'/../documents/private-data.txt');
         $documents = $dataReader->getDocuments();
-
-        $splitDocuments = DocumentSplitter::splitDocuments($documents, 500);
-
+        $splitDocuments = DocumentSplitter::splitDocuments($documents, 100);
+        $formattedDocuments = EmbeddingFormatter::formatEmbeddings($splitDocuments);
+    
         $embeddingGenerator = new MistralEmbeddingGenerator();
-        $embeddedDocuments = $embeddingGenerator->embedDocuments($splitDocuments);
-
-        $vectorStore = new DoctrineVectorStore($entityManager, PlaceEntity::class);
+        $embeddedDocuments = $embeddingGenerator->embedDocuments($formattedDocuments);
+    
+        $vectorStore = $this->getCleanVectorStoreForCollectionCompatibleWith($embeddingGenerator);
         $vectorStore->addDocuments($embeddedDocuments);
 
-        $config = new OpenAIConfig();
-        $config->model = 'open-mistral-7b';
-        $config->apiKey = getenv('MISTRAL_API_KEY');
-
-        $chat = new MistralAIChat($config);
+        $chat = $this->defineChat();
 
         $this->qa = new QuestionAnswering(
             $vectorStore,
@@ -62,16 +46,28 @@ class QAService
         return $this->qa;
     }
 
-    protected function getConnectionParams(){
+    protected function defineChat(){
 
-        $connectionParams = [
-            'dbname' => getenv('DB_DATABASE'),
-            'user' => getenv('DB_USERNAME'),
-            'password' => getenv('DB_PASSWORD'),
-            'host' => getenv('DB_HOST'),
-            'driver' => 'pdo_pgsql',
-        ];
+        $config = new OpenAIConfig();
+        $config->model = 'open-mistral-7b';
+        $config->apiKey = getenv('MISTRAL_API_KEY');
 
-        return $connectionParams;
+        $chat = new MistralAIChat($config);
+        return $chat;
     }
+    public function getCleanVectorStoreForCollectionCompatibleWith(EmbeddingGeneratorInterface $embeddingGenerator): AstraDBVectorStore{
+    $vectorStore = new AstraDBVectorStore(new AstraDBClient(collectionName: 'collection_'.$embeddingGenerator->getEmbeddingLength()));
+
+    $currentEmbeddingLength = $vectorStore->getEmbeddingLength();
+    if ($currentEmbeddingLength === 0) {
+        $vectorStore->createCollection($embeddingGenerator->getEmbeddingLength());
+    } elseif ($embeddingGenerator->getEmbeddingLength() !== $currentEmbeddingLength) {
+        $vectorStore->deleteCollection();
+        $vectorStore->createCollection($embeddingGenerator->getEmbeddingLength());
+    }
+
+    $vectorStore->cleanCollection();
+
+    return $vectorStore;
+}
 }
