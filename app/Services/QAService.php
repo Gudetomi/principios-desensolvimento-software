@@ -10,7 +10,6 @@ use LLPhant\Embeddings\EmbeddingGenerator\Mistral\MistralEmbeddingGenerator;
 use LLPhant\Query\SemanticSearch\QuestionAnswering;
 use LLPhant\Embeddings\VectorStores\AstraDB\AstraDBVectorStore;
 use LLPhant\Embeddings\VectorStores\AstraDB\AstraDBClient;
-use LLPhant\Embeddings\Document;
 use LLPhant\Embeddings\EmbeddingFormatter\EmbeddingFormatter;
 use LLPhant\Embeddings\EmbeddingGenerator\EmbeddingGeneratorInterface;
 

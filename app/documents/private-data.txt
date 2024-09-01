@@ -1,1 +1,4 @@
-"The Sky is blue!"
+"Doença febril aguda, que pode ser de curso benigno ou grave, dependendo da forma como se apresente: infecção inaparente, dengue clássico (DC), 
+febre hemorrágica da dengue (FHD) ou síndrome do choque da dengue (SCD). Atualmente, é a mais importante arbovirose que afeta o ser humano, 
+constituindo-se em sério problema de saúde pública no mundo. Ocorre e dissemina-se especialmente nos países tropicais, onde as condições 
+do meio ambiente favorecem o desenvolvi-mento e a proliferação do Aedes aegypti, principal mosquito vetor."
